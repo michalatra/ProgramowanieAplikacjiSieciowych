@@ -36,13 +36,13 @@ try:
                     result = float(data1) + float(data2)
                     sent = sock.sendto(str(result), address)
                 elif op == '-':
-                    result = float(data1) + float(data2)
+                    result = float(data1) - float(data2)
                     sent = sock.sendto(str(result), address)
                 elif op == '*':
-                    result = float(data1) + float(data2)
+                    result = float(data1) * float(data2)
                     sent = sock.sendto(str(result), address)
                 elif op == '/':
-                    result = float(data1) + float(data2)
+                    result = float(data1) / float(data2)
                     sent = sock.sendto(str(result), address)
                 else:
                     result = "Bad operator. I support only +, -, *, / math operators"

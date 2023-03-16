@@ -17,7 +17,7 @@ def try_connect(host: str, port: int):
         if soc:
             print("Connection on port %s was successful (service: %s)" % (port, service))
     except socket.error:
-        print("Connection error")
+        print("Connection not successfull on port %s (service: %s)" % (port, service))
     finally:
         soc.close()
 
