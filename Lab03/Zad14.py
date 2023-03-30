@@ -7,8 +7,8 @@ TCP_DATAGRAM = """0b 54 89 8b 1f 9a 18 ec bb b1 64 f2 80 18
 
 RES_HEAD = "zad13odp"
 
-SERVER_IP = "212.182.25.252"
-# SERVER_IP = "127.0.0.1"
+# SERVER_IP = "212.182.24.27"
+SERVER_IP = "127.0.0.1"
 SERVER_PORT = 2909
 
 def send_result(result: str):

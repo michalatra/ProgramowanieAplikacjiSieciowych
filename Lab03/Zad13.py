@@ -7,8 +7,8 @@ UDP_DATAGRAM = """ed 74 0b 55 00 24 ef fd 70 72 6f 67 72 61
 
 RES_HEAD = "zad14odp"
 
-SERVER_IP = "212.182.25.252"
-# SERVER_IP = "127.0.0.1"
+# SERVER_IP = "212.182.24.27"
+SERVER_IP = "127.0.0.1"
 SERVER_PORT = 2910
 
 def send_result(result: str):
