@@ -1,7 +1,7 @@
 import socket
 
 IP = "127.0.0.1"
-PORT = 9406
+PORT = 9407
 
 
 def send_message():

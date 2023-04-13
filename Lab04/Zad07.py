@@ -4,31 +4,33 @@ IP = "127.0.0.1"
 PORT = 9406
 
 
-def get_result(data: str):
-    try:
-        host = socket.gethostbyname(data)
-    except Exception:
-        host = None
-
-    if host:
-        return host
-    else:
-        return "Invalid host"
-
-
 def start_server():
     print("Starting server...")
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
-        server.bind((IP, PORT))
+    while True:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+                server.bind((IP, PORT))
+                server.settimeout(5)
+                server.listen()
 
-        while True:
-            message, address = server.recvfrom(4096)
-            print("Received: ", message.decode())
+                connection, address = server.accept()
 
-            result = get_result(message.decode())
+                with connection:
+                    print("Connected by", address)
+                    while True:
+                        data = connection.recv(20)
+                        if not data:
+                            break
+                        print("Received: ", data.decode())
 
-            server.sendto(result.encode(), address)
-
+                        connection.sendall(data)
+        
+        except TimeoutError:
+            print("Timeout")
+            continue
+        except InterruptedError:
+            print("Interrupted")
+            exit(0)
 
 if __name__ == "__main__":
     start_server()

@@ -1,7 +1,7 @@
 import socket
 
 IP = "127.0.0.1"
-PORT = 9401
+PORT = 9407
 
 
 def start_server():
@@ -17,13 +17,16 @@ def start_server():
 
                 with connection:
                     print("Connected by", address)
-                    while True:
-                        data = connection.recv(4096)
-                        if not data:
-                            break
-                        print("Received: ", data.decode())
 
-                        connection.sendall(data)
+                    recieved_data = ""
+
+                    while len(recieved_data) < 20:
+                        data = connection.recv(20 - len(recieved_data))
+                        print("Received: ", data.decode())
+                        recieved_data += data.decode("utf-8")
+
+                    connection.sendall(recieved_data.encode("utf-8"))
+        
         except TimeoutError:
             print("Timeout")
             continue

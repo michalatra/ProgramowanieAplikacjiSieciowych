@@ -6,15 +6,22 @@ PORT = 9402
 
 def start_server():
     print("Starting server...")
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
-        server.bind((IP, PORT))
+    while True:
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server:
+                server.bind((IP, PORT))
+                server.settimeout(5)
 
-        while True:
-            message, address = server.recvfrom(4096)
-            print("Received: ", message.decode())
+                message, address = server.recvfrom(4096)
+                print("Received: ", message.decode())
 
-            server.sendto(message, address)
-
+                server.sendto(message, address)
+        except TimeoutError:
+            print("Timeout")
+            continue
+        except InterruptedError:
+            print("Interrupted")
+            exit(0)
 
 if __name__ == "__main__":
     start_server()
