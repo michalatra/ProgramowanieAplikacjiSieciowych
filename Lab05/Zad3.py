@@ -38,17 +38,27 @@ def unlock_udp(udp_ports):
 
 
 def connect_tcp():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_socket:
-        tcp_socket.connect((HOST, PORT))
-        tcp_socket.sendall("Hello".encode())
-        response = tcp_socket.recv(1024)
-        print(response.decode("utf-8"))
-
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as tcp_socket:
+            tcp_socket.connect((HOST, PORT))
+            tcp_socket.settimeout(10)
+            tcp_socket.sendall("Hello".encode())
+            response = tcp_socket.recv(1024)
+            print(response.decode("utf-8"))
+            return True
+    except Exception as e:
+        print("An error occurred:", e)
+        return False
 
 def verify_unlock_combinations(udp_ports: list):
-     permutations(udp_ports, 3)
+    for perm in permutations(udp_ports, 3):
+        print("Testing: ", perm)
+        unlock_udp(udp_ports)
+        if connect_tcp():
+            break
 
 if __name__ == "__main__":
     udp_ports = scan_udp_ports()
-    unlock_udp([34666, 17666, 53666])
-    connect_tcp()
+    print("Found ports: ", udp_ports)
+    verify_unlock_combinations(udp_ports)
+        # unlock_udp([34666, 17666, 53666])

@@ -23,5 +23,17 @@ def perfotm_test():
     executionTime = end_time - start_time
     print("Execution time: " + str(executionTime))
 
+    return executionTime
+
+
+def measure_performance():
+    results = []
+    for i in range(10):
+        results.append(perfotm_test())
+
+    print("Results: " + str(results))
+    print("Average execution time: " + str(sum(results) / len(results)))
+
+
 if __name__ == "__main__":
-    perfotm_test()
+    measure_performance()
