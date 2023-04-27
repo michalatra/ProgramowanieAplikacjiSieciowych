@@ -78,10 +78,15 @@ def start_email_server():
         print(f"Server is listening on {IP}:{PORT}")
 
         while True:
-            connection, address = server.accept()
-            print(f"Connection with {address} has been established")
-            handle_smtp_connection(connection)
-
+            try:
+                connection, address = server.accept()
+                print(f"Connection with {address} has been established")
+                handle_smtp_connection(connection)
+            except KeyboardInterrupt:
+                print("Server is shutting down")
+                exit(0)
+            except Exception as e:
+                print("Unexpected error occurred ", e)
 
 if __name__ == "__main__":
     start_email_server()
