@@ -1,0 +1,5 @@
+telnet 127.0.0.1 3334
+user johndoe
+pass p@ssw0rd1
+list
+quit

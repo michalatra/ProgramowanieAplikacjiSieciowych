@@ -1,0 +1,5 @@
+telnet 127.0.0.1 3334
+user janedoe
+pass securepass!
+stat
+quit

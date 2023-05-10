@@ -17,4 +17,4 @@ def generate_mock_emails(num_emails):
         emails.append(email)
     return json.dumps(emails)
 
-print(generate_mock_emails(100))
+print(generate_mock_emails(20))
