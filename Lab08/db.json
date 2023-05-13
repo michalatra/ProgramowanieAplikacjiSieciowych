@@ -1,0 +1,117 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john.doe@test.com",
+            "username": "johndoe",
+            "password": "123456",
+            "topMailboxID": 3,
+            "topMessageID": 0,
+            "folders": [
+                {
+                    "id": 1,
+                    "name": "Inbox",
+                    "isNoSelect": false,
+                    "topMailboxID": 1,
+                    "topMessageID": 1,
+                    "messages": [
+                        {
+                            "uid": 1,
+                            "sid": 1,
+                            "subject": "Test message",
+                            "body": "This is a test message",
+                            "sender": "test@test.com",
+                            "flags": ["\\Recent"],
+                            "size": 1000,
+                            "date": "2015-01-01 00:00:00"
+                        }
+                    ],
+                    "folders": [
+                        {
+                            "id": 1,
+                            "name": "Folder",
+                            "isNoSelect": false,
+                            "topMailboxID": 1,
+                            "topMessageID": 1,
+                            "messages": [
+                                {
+                                    "uid": 1,
+                                    "sid": 1,
+                                    "subject": "Test message",
+                                    "body": "This is a test message",
+                                    "sender": "test@test.com",
+                                    "flags": ["\\Recent"],
+                                    "size": 1000,
+                                    "date": "2015-01-01 00:00:00"
+                                }
+                            ],
+                            "folders": [
+                                {
+                                    "id": 1,
+                                    "name": "Test",
+                                    "isNoSelect": false,
+                                    "topMailboxID": 0,
+                                    "topMessageID": 1,
+                                    "messages": [
+                                        {
+                                            "uid": 1,
+                                            "sid": 1,
+                                            "subject": "Test message",
+                                            "body": "This is a test message",
+                                            "sender": "test@test.com",
+                                            "flags": ["\\Recent"],
+                                            "size": 1000,
+                                            "date": "2015-01-01 00:00:00"
+                                        }
+                                    ],
+                                    "folders": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "Sent",
+                    "isNoSelect": false,
+                    "topMailboxID": 0,
+                    "topMessageID": 1,
+                    "messages": [
+                        {
+                            "uid": 1,
+                            "sid": 1,
+                            "subject": "Test message",
+                            "body": "This is a test message",
+                            "sender": "test@test.com",
+                            "flags": ["\\Recent"],
+                            "size": 1000,
+                            "date": "2015-01-01 00:00:00"
+                        }
+                    ],
+                    "folders": []
+                },
+                {
+                    "id": 3,
+                    "name": "Trash",
+                    "isNoSelect": false,
+                    "topMailboxID": 0,
+                    "topMessageID": 1,
+                    "messages": [
+                        {
+                            "uid": 3,
+                            "sid": 1,
+                            "subject": "Test message",
+                            "body": "This is a test message",
+                            "sender": "test@test.com",
+                            "flags": ["\\Recent"],
+                            "size": 1000,
+                            "date": "2015-01-01 00:00:00"
+                        }
+                    ],
+                    "folders": []
+                }
+            ]
+        }
+    ]
+}
