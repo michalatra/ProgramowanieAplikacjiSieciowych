@@ -44,7 +44,7 @@ class IMAPCommandType(Enum):
     CLOSE = "CLOSE" # +
     EXPUNGE = "EXPUNGE" # +
     SEARCH = "SEARCH" # +
-    FETCH = "FETCH"
+    FETCH = "FETCH" # +
     STORE = "STORE"
 
 
@@ -54,6 +54,14 @@ class IMAPSearchParameters(Enum):
     BODY = "BODY"
     FROM = "FROM"
     
+
+class IMAPStoreFlags(Enum):
+    FLAGS = "FLAGS"
+    FLAGS_SILENT = "FLAGS.SILENT"
+    ADD_FLAGS = "+FLAGS"
+    ADD_FLAGS_SILENT = "+FLAGS.SILENT"
+    REMOVE_FLAGS = "-FLAGS"
+    REMOVE_FLAGS_SILENT = "-FLAGS.SILENT"
 
 class IMAPStatusDataItem(Enum):
     MESSAGES = "MESSAGES"
@@ -82,6 +90,7 @@ class IMAPErrorMessage(Enum):
     MAILBOX_EXISTS = "Mailbox already exists"
     INVALID_STATUS_DATA_ITEM = "Invalid status data item"
     INVALID_SEARCH_PARAMETERS = "Invalid search parameters"
+    NOT_SUPPORTED = "Not supported"
 
 
 class IMAPResponse:
@@ -186,6 +195,10 @@ class IMAPServer:
                 return self.handle_expunge(request)
             case IMAPCommandType.SEARCH.value:
                 return self.handle_search(request)
+            case IMAPCommandType.FETCH.value:
+                return self.handle_fetch(request)
+            case IMAPCommandType.STORE.value:
+                return self.handle_store(request)
         
         return self.handle_invalid_command(request)
     
@@ -535,6 +548,62 @@ class IMAPServer:
         return self.handle_response(IMAPResponseStatus.OK, lines=[search_results_lines_str], tag=request[0], comment="SEARCH completed")
         
 
+    def handle_fetch(self, request: list[str]) -> IMAPResponse:
+        if self.state != IMAPServerState.SELECTED:
+            return self.handle_invalid_state(request)
+        
+        if len(request) < 3:
+            return self.handle_invalid_arguments()
+        
+        if len(request) > 3:
+            return self.handle_invalid_arguments()
+        
+        messages_uuids = request[2].split(":")
+
+        if len(messages_uuids) > 2:
+            return self.handle_invalid_arguments()
+
+        if len(messages_uuids) > 1:
+            messages_uuids = range(messages_uuids[0], messages_uuids[1] + 1)
+
+        messages = list(filter(lambda m: m["uid"] in messages_uuids, self.selected_folder["messages"]))
+        
+        messages_lines = list(map(lambda m: str(m["uid"]) + " FETCH " + "Subject: " + m["subject"] + " Sender: " + m["sender"] + " Content: " + m["content"], messages))
+
+        return self.handle_response(IMAPResponseStatus.OK, lines=messages_lines, tag=request[0], comment="FETCH completed")
+
+
+    def handle_store(self, request: list[str]) -> IMAPResponse:
+        if self.state != IMAPServerState.SELECTED:
+            return self.handle_invalid_state(request)
+        
+        if len(request) < 4:
+            return self.handle_invalid_arguments()
+        
+        if len(request) > 4:
+            return self.handle_invalid_arguments()
+        
+        messages_uuids = request[2].split(":")
+
+        if len(messages_uuids) > 1:
+            messages_uuids = range(messages_uuids[0], messages_uuids[1] + 1)
+
+        action = request[3]
+
+        if action not in [cmd.value for cmd in IMAPStoreFlags]:
+            return self.handle_invalid_arguments()
+        
+        flags = request[4].split(" ")
+        flags[0] = flags[0][1:]
+        flags[-1] = flags[-1][:-1]
+
+        messages = list(filter(lambda m: m["uid"] in messages_uuids, self.selected_folder["messages"]))
+
+        if action == IMAPStoreFlags.ADD_FLAGS.value or action == IMAPStoreFlags.ADD_FLAGS_SILENT.value:
+            for flag in flags:
+
+
+
     def check_if_has_flag(self, message, flag: IMAPMessageFlag) -> bool:
         return flag.value in message["flags"]
 
@@ -549,6 +618,10 @@ class IMAPServer:
 
     def handle_invalid_arguments(self) -> IMAPResponse:
         return self.handle_response(IMAPResponseStatus.BAD, comment=IMAPErrorMessage.INVALID_ARGUMENTS.value)
+        
+
+    def handle_not_supported(self) -> IMAPResponse:
+        return self.handle_response(IMAPResponseStatus.BAD, comment=IMAPErrorMessage.NOT_SUPPORTED.value)
         
 
     def handle_response(self, response_status: IMAPResponseStatus, lines: list[str] = [], tag: str = "*", comment: str = "", isLogout: bool = False) -> IMAPResponse:
