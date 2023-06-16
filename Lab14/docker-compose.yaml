@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  irc:
+    image: inspircd/inspircd-docker
+    ports:
+      - "6667:6667"
+    volumes:
+      - /path/to/your/config:/inspircd/conf/ inspircd/inspircd-docker
