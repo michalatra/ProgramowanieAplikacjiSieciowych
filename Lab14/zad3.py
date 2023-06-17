@@ -1,9 +1,22 @@
 import socket, ssl
+from threading import Thread
 
 HOST = "chat.freenode.net"
 PORT = 7000
 
-HTTP_REQUEST = """GET /html HTTP/1.1\r\nHost: httpbin.org\r\nUser-Agent:Safari/7.0.3\r\n\r\n"""
+class Listener(Thread):
+    def __init__(self, sock):
+        super().__init__()
+        self.sock = sock
+
+    def run(self):
+        while True:
+            message = self.sock.read(4096).decode()
+            if message.startswith("PING"):
+                self.sock.write(("PONG " + message.split()[1] + "\r\n").encode())
+            else:
+                print(message)
+
 
 class Client:
     def __init__(self, host=HOST, port=PORT):
@@ -36,45 +49,34 @@ class Client:
 
         print(cert)
 
+        self.listener = Listener(self.sock)
+
         if not cert or ssl.match_hostname(cert, self.host):
             raise Exception("Invalid SSL certificate")
 
-
-    def getContent(self, filename="index.html"):
-        self.secure_sock.write(HTTP_REQUEST.encode())
-        with open(filename, "wb") as file:
-            while True:
-                received = self.secure_sock.read(4096)
-                if not received:
-                    break
-                file.write(received)
-        self.secure_sock.close()
-
     
-    def initializeChat(self, nick = "hiperTest"):
-        self.secure_sock.write(("CAP LS 302\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("NICK " + nick + "\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("USER " + nick + " 0 * :" + nick + "\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("CAP REQ :account-notify account-tag away-notify batch cap-notify chghost extended-join invite-notify message-tags multi-prefix server-time setname userhost-in-names\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("CAP END\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("WHO " + "~" + nick + "\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
-        self.secure_sock.write(("JOIN #kanal1\r\n").encode())
-        print(self.secure_sock.read(4096).decode())
+    def initializeChat(self, nick = "hiperTest", channel = "#test123"):
+        listener = Listener(self.secure_sock)
+        setup_commands = [
+            # "CAP LS 302",
+            "NICK " + nick,
+            "USER " + nick + " 0 * :" + nick,
+            # "CAP REQ :account-notify account-tag away-notify batch cap-notify chghost extended-join invite-notify message-tags multi-prefix server-time setname userhost-in-names",
+            # "CAP END",
+            "WHO " + "~" + nick,
+            "JOIN " + channel
+        ]
+
+        for command in setup_commands:
+            self.secure_sock.write((command + "\r\n").encode())
 
         while True: 
             message = input("Message: ")
-            self.secure_sock.write(("PRIVMSG #kanal1 :" + message + "\r\n").encode())
-            print(self.secure_sock.read(4096).decode())
+            self.secure_sock.write(("PRIVMSG " + channel + " :" + message + "\r\n").encode())
+
 
 if __name__ == "__main__":
     client = Client()
     # client.setupSecureConnection()
-    # client.getContent()
     client.setupVerifiedConnection()
     client.initializeChat()
