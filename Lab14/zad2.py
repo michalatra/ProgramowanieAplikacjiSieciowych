@@ -3,7 +3,7 @@ import socket, ssl
 HOST = "httpbin.org"
 PORT = 443
 
-HTTP_REQUEST = """GET /html HTTP/1.1\r\nHost: httpbin.org\r\nUser-Agent:Safari/7.0.3\r\n\r\n"""
+HTTP_REQUEST = "GET /html HTTP/1.1\r\nHost: " + HOST + "\r\nUser-Agent:Safari/7.0.3\r\n\r\n"
 
 class Client:
     def __init__(self, host=HOST, port=PORT):
@@ -39,17 +39,30 @@ class Client:
 
     def getContent(self, filename="index.html"):
         self.secure_sock.write(HTTP_REQUEST.encode())
-        with open(filename, "wb") as file:
-            while True:
-                received = self.secure_sock.read(4096)
-                if not received:
-                    break
-                file.write(received)
+
+        content = b""
+        while True:
+            received = self.secure_sock.read(4096)
+            print("Received: ", received)
+            content += received
+            if not received:
+                break
         self.secure_sock.close()
+        
+        print("Response: ", content.decode())
+        
+        header, content = content.split(b"\r\n\r\n")
+
+        with open(filename, "wb") as file:
+                file.write(content)
 
 if __name__ == "__main__":
     client = Client()
+    
+    # 2.a
     # client.setupSecureConnection()
     # client.getContent()
+    
+    # 2.b
     client.setupVerifiedConnection()
     client.getContent("index_verified.html")
